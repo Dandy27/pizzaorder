@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pizzaorder/components/ingredient.dart';
 
-const _pizzaCartSize = 48.0;
+const _pizzaCartSize = 55.0;
 
 class PizzaOrderDetails extends StatefulWidget {
   @override
@@ -64,7 +64,16 @@ class _PizzaOrderDetailsState extends State<PizzaOrderDetails> {
   }
 }
 
-class _PizzaDetails extends StatelessWidget {
+class _PizzaDetails extends StatefulWidget {
+  @override
+  __PizzaDetailsState createState() => __PizzaDetailsState();
+}
+
+class __PizzaDetailsState extends State<_PizzaDetails> {
+  final _listIngredients = <Ingredient>[];
+  bool _focused = false;
+  int _total = 15;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -72,34 +81,75 @@ class _PizzaDetails extends StatelessWidget {
         Expanded(
           child: DragTarget<Ingredient>(
             onAccept: (ingredient) {
+              // ignore: avoid_print
               print('onAccept');
+              setState(() {
+                _focused = false;
+              });
             },
             onWillAccept: (ingredient) {
+              // ignore: avoid_print
               print('onWillAccept');
+              setState(() {
+                _focused = true;
+                _total++;
+              });
+
+              for (final Ingredient i in _listIngredients) {
+                if (i.compare(ingredient!)) {
+                  return false;
+                }
+              }
+
               return true;
             },
             onLeave: (ingredient) {
+              // ignore: avoid_print
               print('onLeave');
+              setState(() {
+                _focused = false;
+              });
             },
             builder: (context, list, rejects) {
-              return Stack(
-                children: [
-                  Image.asset('assets/images/dish.png'),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Image.asset('assets/images/pizza-1.png'),
+              return LayoutBuilder(builder: (context, constraints) {
+                return Center(
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 400),
+                    height: _focused
+                        ? constraints.maxHeight
+                        : constraints.maxHeight - 10,
+                    child: Stack(
+                      children: [
+                        Image.asset('assets/images/dish.png'),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Image.asset('assets/images/pizza-1.png'),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              );
+                );
+              });
             },
           ),
         ),
         const SizedBox(
           height: 20,
         ),
-        const Text(
-          '\$27',
-          style: TextStyle(fontSize: 26),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 800),
+          transitionBuilder: (child, animation) {
+            return ScaleTransition(
+              scale: animation,
+              child: child,
+            );
+            // ! TODO TRANSITION
+          },
+          child: Text(
+            '\$$_total',
+            key: Key(_total.toString()),
+            style: const TextStyle(fontSize: 26),
+          ),
         )
       ],
     );
@@ -130,16 +180,13 @@ class _PizzaCartButton extends StatelessWidget {
 class _PizzaIngredients extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.red.withOpacity(0.5),
-      child: ListView.builder(
-          scrollDirection: Axis.horizontal,
-          itemCount: ingredients.length,
-          itemBuilder: (context, index) {
-            final ingredient = ingredients[index];
-            return PizzaIngredientsItem(ingredient: ingredient);
-          }),
-    );
+    return ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: ingredients.length,
+        itemBuilder: (context, index) {
+          final ingredient = ingredients[index];
+          return PizzaIngredientsItem(ingredient: ingredient);
+        });
   }
 }
 
@@ -150,24 +197,29 @@ class PizzaIngredientsItem extends StatelessWidget {
       : super(key: key);
   @override
   Widget build(BuildContext context) {
-    final child = Container(
-      height: _pizzaCartSize,
-      width: _pizzaCartSize,
-      decoration:
-          const BoxDecoration(color: Color(0xFFF5EED3), shape: BoxShape.circle),
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Image.asset(
-          ingredient.image,
-          fit: BoxFit.contain,
+    final child = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 7),
+      child: Container(
+        height: 45,
+        width: 45,
+        // ignore: prefer_const_constructors
+        decoration: BoxDecoration(
+          color: const Color(0xFFF5EED3),
+          shape: BoxShape.circle,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: Image.asset(
+            ingredient.image,
+            fit: BoxFit.contain,
+          ),
         ),
       ),
     );
-    return Draggable(
-      feedback: child,
-      data: ingredient,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
+    return Center(
+      child: Draggable(
+        feedback: child,
+        data: ingredient,
         child: child,
       ),
     );

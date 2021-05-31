@@ -3,6 +3,8 @@ class Ingredient {
   Ingredient(
     this.image,
   );
+
+  bool compare(Ingredient ingredient) => ingredient.image == image;
 }
 
 final ingredients = <Ingredient>[
