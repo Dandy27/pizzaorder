@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pizzaorder/components/ingredient.dart';
 
@@ -71,8 +72,9 @@ class _PizzaDetails extends StatefulWidget {
 
 class __PizzaDetailsState extends State<_PizzaDetails> {
   final _listIngredients = <Ingredient>[];
-  bool _focused = false;
+
   int _total = 15;
+  final _notifierFocused = ValueNotifier(false);
 
   @override
   Widget build(BuildContext context) {
@@ -83,17 +85,14 @@ class __PizzaDetailsState extends State<_PizzaDetails> {
             onAccept: (ingredient) {
               // ignore: avoid_print
               print('onAccept');
-              setState(() {
-                _focused = false;
-              });
+              _notifierFocused.value = false;
+              _listIngredients.add(ingredient);
+              _total++;
             },
             onWillAccept: (ingredient) {
               // ignore: avoid_print
               print('onWillAccept');
-              setState(() {
-                _focused = true;
-                _total++;
-              });
+              _notifierFocused.value = true;
 
               for (final Ingredient i in _listIngredients) {
                 if (i.compare(ingredient!)) {
@@ -106,27 +105,30 @@ class __PizzaDetailsState extends State<_PizzaDetails> {
             onLeave: (ingredient) {
               // ignore: avoid_print
               print('onLeave');
-              setState(() {
-                _focused = false;
-              });
+              _notifierFocused.value = false;
             },
             builder: (context, list, rejects) {
               return LayoutBuilder(builder: (context, constraints) {
                 return Center(
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 400),
-                    height: _focused
-                        ? constraints.maxHeight
-                        : constraints.maxHeight - 10,
-                    child: Stack(
-                      children: [
-                        Image.asset('assets/images/dish.png'),
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Image.asset('assets/images/pizza-1.png'),
+                  child: ValueListenableBuilder<bool>(
+                    valueListenable: _notifierFocused,
+                    builder: (context, focused, _) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        height: focused
+                            ? constraints.maxHeight
+                            : constraints.maxHeight - 10,
+                        child: Stack(
+                          children: [
+                            Image.asset('assets/images/dish.png'),
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Image.asset('assets/images/pizza-1.png'),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
+                      );
+                    },
                   ),
                 );
               });
@@ -134,20 +136,38 @@ class __PizzaDetailsState extends State<_PizzaDetails> {
           ),
         ),
         const SizedBox(
-          height: 20,
+          height: 10,
         ),
         AnimatedSwitcher(
-          duration: const Duration(milliseconds: 800),
-          transitionBuilder: (child, animation) {
-            return ScaleTransition(
-              scale: animation,
-              child: child,
+          duration: const Duration(milliseconds: 300),
+          layoutBuilder: (Widget? currentChild, List<Widget> previousChildren) {
+            return Stack(
+              // ignore: sort_child_properties_last
+              children: <Widget>[
+                ...previousChildren,
+                if (currentChild != null) currentChild,
+              ],
+              alignment: Alignment.center,
             );
-            // ! TODO TRANSITION
+          },
+          transitionBuilder: (child, animation) {
+            // return ScaleTransition(
+            //   scale: animation,
+            //   child: child,
+            // );
+            return FadeTransition(
+              opacity: animation,
+              child: SlideTransition(
+                position: animation.drive(Tween<Offset>(
+                    begin: const Offset(0.0, 0.0),
+                    end: Offset(0.0, animation.value - 0.5))),
+                child: child,
+              ),
+            );
           },
           child: Text(
             '\$$_total',
-            key: Key(_total.toString()),
+            key: UniqueKey(),
             style: const TextStyle(fontSize: 26),
           ),
         )
