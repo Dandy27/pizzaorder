@@ -6,7 +6,12 @@ import 'common/components/build_cart_button.dart';
 import 'common/components/build_pizza_detail.dart';
 import 'common/components/build_pizza_ingredientes.dart';
 
-class PizzaOrderHome extends StatelessWidget {
+class PizzaOrderHome extends StatefulWidget {
+  @override
+  _PizzaOrderHomeState createState() => _PizzaOrderHomeState();
+}
+
+class _PizzaOrderHomeState extends State<PizzaOrderHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(

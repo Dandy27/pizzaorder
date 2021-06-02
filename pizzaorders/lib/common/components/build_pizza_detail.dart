@@ -8,26 +8,32 @@ Widget buildPizzzaDetail() {
     flex: 3,
     child: Column(
       children: [
-        Expanded(
-          child: DragTarget<Ingredient>(
-            builder: (BuildContext context, List<Object?> candidateData,
-                List<dynamic> rejectedData) {
-              return Stack(
-                children: [
-                  Image.asset(
-                    'assets/images/dish.png',
-                    fit: BoxFit.contain,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Image.asset(
-                      'assets/images/pizza-1.png',
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 800),
+        
+          child: Expanded(
+            child: DragTarget<Ingredient>(
+              onWillAccept: (ingredient) => true,
+              onAccept: (iingredient) {},
+              builder: (BuildContext context, List<Object?> candidateData,
+                  List<dynamic> rejectedData) {
+                return Stack(
+                  children: [
+                    Image.asset(
+                      'assets/images/dish.png',
                       fit: BoxFit.contain,
                     ),
-                  )
-                ],
-              );
-            },
+                    Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Image.asset(
+                        'assets/images/pizza-1.png',
+                        fit: BoxFit.contain,
+                      ),
+                    )
+                  ],
+                );
+              },
+            ),
           ),
         ),
         const SizedBox(
