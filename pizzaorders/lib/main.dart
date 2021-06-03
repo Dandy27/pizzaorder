@@ -7,7 +7,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  static const String title = 'Vegan Pizza';
+  // static const String title = 'Vegan Pizza';
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

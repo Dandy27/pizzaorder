@@ -12,8 +12,9 @@ Widget buildBody(BuildContext context) {
         left: 10,
         right: 10,
         child: Card(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           elevation: 10,
           child: Column(
             children: [
@@ -27,40 +28,44 @@ Widget buildBody(BuildContext context) {
           ),
         ),
       ),
-      buildButtonCart(context)
+      buildButtonCart(
+          context: context,
+          press: () {},
+          icon: const Icon(
+            Icons.shopping_cart_outlined,
+          )),
     ],
   );
 }
 
-Widget buildButtonCart(BuildContext context) {
-  final IconData icon;
-  return Positioned(
+Widget buildButtonCart(
+        {required BuildContext context,
+        required VoidCallback press,
+        required Icon icon}) =>
+    Positioned(
       bottom: 35,
       height: _pizzaCardSize,
       width: _pizzaCardSize,
       left: MediaQuery.of(context).size.width / 2 - _pizzaCardSize / 2,
       child: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.orange.withOpacity(0.5),
-              Colors.orange,
-            ],
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.orange.withOpacity(0.5),
+                Colors.orange,
+              ],
+            ),
+            borderRadius: BorderRadius.circular(5),
           ),
-          borderRadius: BorderRadius.circular(5),
-        ),
-        child: IconButton(
-          onPressed: () {},
-          icon: const Icon(
-            Icons.shopping_cart_outlined,
-            size: 35,
+          child: IconButton(
+            onPressed: press,
+            icon: icon,
             color: Colors.white,
-          ),
-        ),
-      ));
-}
+            iconSize: 35,
+          )),
+    );
 
 Widget buildPizzaDetails() => Expanded(
     flex: 3,
@@ -75,7 +80,9 @@ Widget buildPizzaDetails() => Expanded(
               ),
               Padding(
                 padding: const EdgeInsets.all(15.0),
-                child: Image.asset('assets/images/pizza-1.png'),
+                child: Image.asset(
+                  'assets/images/pizza-1.png',
+                ),
               ),
             ],
           ),
@@ -83,14 +90,15 @@ Widget buildPizzaDetails() => Expanded(
         const SizedBox(
           height: defaultPadding,
         ),
-        buildText()
+        buildText(Colors.brown, '\$15')
       ],
     ));
 
-Widget buildText() {
-  return const Text(
-    '\$15',
-    style: TextStyle(
-        color: Colors.brown, fontSize: 28, fontWeight: FontWeight.bold),
-  );
-}
+Widget buildText(Color color, String text) => Text(
+      text,
+      style: const TextStyle(
+        color: Colors.brown,
+        fontSize: 28,
+        fontWeight: FontWeight.bold,
+      ),
+    );

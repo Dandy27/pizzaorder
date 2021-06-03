@@ -13,6 +13,10 @@ class PizzaOrderHome extends StatefulWidget {
 class _PizzaOrderHomeState extends State<PizzaOrderHome> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(appBar: buildAppBar(), body: buildBody(context));
+    return Scaffold(
+        appBar: buildAppBar(
+          text: 'Vegan Pizza',press: (){}
+        ),
+        body: buildBody(context));
   }
 }
